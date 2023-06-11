@@ -1,5 +1,5 @@
 module.exports = {
   DB_URL:
-    'mongodb+srv://airbnbusername:airbnbpassword@airbnb.prh8sp9.mongodb.net/airbnb',
-  SESSION_SECRET: 'airbnbpassword',
-}
+    "mongodb+srv://tommypurcelljr:caloriepassword@calorie-counter.h9z6mfc.mongodb.net/calorie-counter",
+  SESSION_SECRET: "caloriepassword",
+};
