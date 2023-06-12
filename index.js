@@ -51,17 +51,9 @@ app.get("/", async (req, res) => {
   res.send("Hello from the Calorie Counter API");
 });
 
-// finds all food items in database
-// app.get("/foods", async (req, res) => {
-//   console.log(req.query);
-//   let products = await Foods.find({});
-//   console.log(products);
-//   res.send(products);
-// });
-
 app.get("/foods", async (req, res) => {
   console.log(req.query);
-  let foods = await Foods.find({}).sort({ date: "asc" });
+  let foods = await Foods.find({}).sort({ date: "desc" });
   let groupedFoods = [];
   let currentDay = null;
 
@@ -86,6 +78,17 @@ app.post("/foods", async (req, res) => {
   let food = await Foods.create(req.body);
   console.log("food", food);
   res.send(food);
+});
+
+app.patch("/foods", async (req, res) => {
+  console.log(req.body.id);
+  const filter = { _id: req.body.id };
+  const update = { calories: req.body.calories };
+  let updatedUser = await Foods.findOneAndUpdate(filter, update, {
+    new: true,
+  });
+  console.log(updatedUser);
+  res.send(updatedUser);
 });
 
 app.delete("/foods/:id", async (req, res) => {
