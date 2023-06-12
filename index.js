@@ -56,6 +56,7 @@ app.get("/foods", async (req, res) => {
   let foods = await Foods.find({}).sort({ date: "desc" });
   let groupedFoods = [];
   let currentDay = null;
+  let totalCalories = 0;
 
   foods.forEach((food) => {
     const date = food.date.toISOString().split("T")[0];
@@ -67,6 +68,14 @@ app.get("/foods", async (req, res) => {
       });
     }
     groupedFoods[groupedFoods.length - 1].foods.push(food);
+  });
+
+  groupedFoods.forEach((group) => {
+    group.foods.forEach((food) => {
+      totalCalories += food.calories;
+    });
+    group.totalCalories = totalCalories;
+    totalCalories = 0;
   });
 
   console.log(groupedFoods);
