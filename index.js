@@ -51,18 +51,49 @@ app.get("/", async (req, res) => {
   res.send("Hello from the Calorie Counter API");
 });
 
+// finds all food items in database
+// app.get("/foods", async (req, res) => {
+//   console.log(req.query);
+//   let products = await Foods.find({});
+//   console.log(products);
+//   res.send(products);
+// });
+
 app.get("/foods", async (req, res) => {
   console.log(req.query);
-  let products = await Foods.find({});
-  console.log(products);
-  res.send(products);
+  let foods = await Foods.find({}).sort({ date: "asc" });
+  let groupedFoods = [];
+  let currentDay = null;
+
+  foods.forEach((food) => {
+    const date = food.date.toISOString().split("T")[0];
+    if (date !== currentDay) {
+      currentDay = date;
+      groupedFoods.push({
+        date: currentDay,
+        foods: [],
+      });
+    }
+    groupedFoods[groupedFoods.length - 1].foods.push(food);
+  });
+
+  console.log(groupedFoods);
+  res.send(groupedFoods);
 });
 
 app.post("/foods", async (req, res) => {
-  console.log(req.body);
+  console.log("body", req.body);
   let food = await Foods.create(req.body);
-  console.log(food);
+  console.log("food", food);
   res.send(food);
+});
+
+app.delete("/foods/:id", async (req, res) => {
+  console.log("hello");
+  console.log(req.params.id);
+
+  await Foods.findByIdAndDelete(req.params.id);
+  res.send("deleted");
 });
 
 // get current logged in user by searching database
