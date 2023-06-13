@@ -13,6 +13,8 @@ module.exports = mongoose.model("foods", {
   date: {
     type: Date,
     required: true,
-    default: Date.now,
+  },
+  timestamp: {
+    type: Date,
   },
 });
