@@ -118,12 +118,14 @@ app.delete("/foods/:id", async (req, res) => {
 // get current logged in user by searching database
 // GET /profile
 app.get("/profile", async (req, res) => {
-  if (req.isAuthenticated()) {
+  try {
     // find current logged in user by searching database
     let currentUser = await Users.findById(req.user._id);
     res.send(currentUser);
-  } else {
-    res.send("Not authorized");
+  } catch (err) {
+    console.log(err);
+    console.log("Not authorized");
+    res.status(500).send("Server error");
   }
 });
 
@@ -135,7 +137,7 @@ app.patch("/profile", async (req, res) => {
     let currentUser = await Users.findOne(req.user);
     console.log(currentUser);
 
-    let updatedUser = await Users.findOneAndUpdate(req.user.id_, req.body, {
+    let updatedUser = await Users.findOneAndUpdate(req.user._id, req.body, {
       new: true,
     });
 
