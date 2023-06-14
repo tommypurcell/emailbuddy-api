@@ -17,4 +17,7 @@ module.exports = mongoose.model("foods", {
   timestamp: {
     type: Date,
   },
+  userid: {
+    type: ObjectId,
+  },
 });

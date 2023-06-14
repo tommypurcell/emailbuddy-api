@@ -52,9 +52,13 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/foods", async (req, res) => {
+  // get foods by userid
   // we sort by date because we want to group the foods by date
   // we sort by timestamp because we want to sort the foods by the time they were created
-  let foods = await Foods.find({}).sort({ date: "desc", timestamp: "desc" });
+  let foods = await Foods.find({ userid: req.user._id }).sort({
+    date: "desc",
+    timestamp: "desc",
+  });
   let groupedFoods = [];
   let currentDay = null;
 
@@ -84,6 +88,8 @@ app.get("/foods", async (req, res) => {
 });
 
 app.post("/foods", async (req, res) => {
+  // add userid to body
+  req.body.userid = req.user._id;
   console.log("body", req.body);
   let food = await Foods.create(req.body);
   console.log("food", food);
@@ -225,5 +231,3 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-
-// write a console log hello
