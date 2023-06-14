@@ -51,10 +51,11 @@ app.get("/", async (req, res) => {
   res.send("Hello from the Calorie Counter API");
 });
 
+// get /foods with user auth
 app.get("/foods", async (req, res) => {
-  // if (req.isAuthenticated()) {
-  try {
-    let foods = await Foods.find().sort({
+  console.log(req.query);
+  if (req.isAuthenticated()) {
+    let foods = await Foods.find({ userid: req.user._id }).sort({
       date: "desc",
       timestamp: "desc",
     });
@@ -64,6 +65,10 @@ app.get("/foods", async (req, res) => {
     foods.forEach((food) => {
       const date = food.date.toISOString().split("T")[0];
 
+      // check if date is not equal to currentDay
+      // currentDay is null on the first iteration and then it is set to the date of the first food then it is compared to the next food then it is set to the date of the next food and so on
+      // if the date is not equal to the currentDay then we push a new object into the groupedFoods array
+      // the new object has a date property that is set to the currentDay
       if (date !== currentDay) {
         currentDay = date;
         groupedFoods.push({
@@ -73,18 +78,15 @@ app.get("/foods", async (req, res) => {
         });
       }
 
+      // we push the food into the foods array of the last object in the groupedFoods array
       groupedFoods[groupedFoods.length - 1].foods.push(food);
+      // we add the calories of the food to the totalCalories property of the last object in the groupedFoods array
       groupedFoods[groupedFoods.length - 1].totalCalories += food.calories;
     });
-
     res.send(groupedFoods);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("Server error");
+  } else {
+    res.send("not authenticated");
   }
-  // } else {
-  res.status(401).send("not authenticated");
-  // }
 });
 
 app.post("/foods", async (req, res) => {
@@ -97,7 +99,7 @@ app.post("/foods", async (req, res) => {
 });
 
 app.patch("/foods", async (req, res) => {
-  console.log(req.body.id);
+  console.log("body", req.body.id);
   const filter = { _id: req.body.id };
   const update = { calories: req.body.calories };
   let updatedUser = await Foods.findOneAndUpdate(filter, update, {
