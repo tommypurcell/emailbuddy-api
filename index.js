@@ -52,39 +52,39 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/foods", async (req, res) => {
-  if (req.isAuthenticated()) {
-    try {
-      let foods = await Foods.find({ userid: req.user._id }).sort({
-        date: "desc",
-        timestamp: "desc",
-      });
-      let groupedFoods = [];
-      let currentDay = null;
+  // if (req.isAuthenticated()) {
+  try {
+    let foods = await Foods.find().sort({
+      date: "desc",
+      timestamp: "desc",
+    });
+    let groupedFoods = [];
+    let currentDay = null;
 
-      foods.forEach((food) => {
-        const date = food.date.toISOString().split("T")[0];
+    foods.forEach((food) => {
+      const date = food.date.toISOString().split("T")[0];
 
-        if (date !== currentDay) {
-          currentDay = date;
-          groupedFoods.push({
-            date: currentDay,
-            foods: [],
-            totalCalories: 0,
-          });
-        }
+      if (date !== currentDay) {
+        currentDay = date;
+        groupedFoods.push({
+          date: currentDay,
+          foods: [],
+          totalCalories: 0,
+        });
+      }
 
-        groupedFoods[groupedFoods.length - 1].foods.push(food);
-        groupedFoods[groupedFoods.length - 1].totalCalories += food.calories;
-      });
+      groupedFoods[groupedFoods.length - 1].foods.push(food);
+      groupedFoods[groupedFoods.length - 1].totalCalories += food.calories;
+    });
 
-      res.send(groupedFoods);
-    } catch (err) {
-      console.log(err);
-      res.status(500).send("Server error");
-    }
-  } else {
-    res.status(401).send("not authenticated");
+    res.send(groupedFoods);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server error");
   }
+  // } else {
+  res.status(401).send("not authenticated");
+  // }
 });
 
 app.post("/foods", async (req, res) => {
