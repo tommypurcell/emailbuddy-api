@@ -135,7 +135,7 @@ app.patch("/profile", async (req, res) => {
     let currentUser = await Users.findOne(req.user);
     console.log(currentUser);
 
-    let updatedUser = await Users.findOneAndUpdate(req.name, req.body, {
+    let updatedUser = await Users.findOneAndUpdate(req.user.id_, req.body, {
       new: true,
     });
 
