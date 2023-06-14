@@ -52,43 +52,38 @@ app.get("/", async (req, res) => {
 });
 
 app.get("/foods", async (req, res) => {
-  // get foods by userid
-  // we sort by date because we want to group the foods by date
-  // we sort by timestamp because we want to sort the foods by the time they were created
+  if (req.isAuthenticated()) {
+    try {
+      let foods = await Foods.find({ userid: req.user._id }).sort({
+        date: "desc",
+        timestamp: "desc",
+      });
+      let groupedFoods = [];
+      let currentDay = null;
 
-  if (req.user.isAuthenticated()) {
-    let foods = await Foods.find({ userid: req.user._id }).sort({
-      date: "desc",
-      timestamp: "desc",
-    });
-    let groupedFoods = [];
-    let currentDay = null;
+      foods.forEach((food) => {
+        const date = food.date.toISOString().split("T")[0];
 
-    foods.forEach((food) => {
-      const date = food.date.toISOString().split("T")[0];
+        if (date !== currentDay) {
+          currentDay = date;
+          groupedFoods.push({
+            date: currentDay,
+            foods: [],
+            totalCalories: 0,
+          });
+        }
 
-      // check if date is not equal to currentDay
-      // currentDay is null on the first iteration and then it is set to the date of the first food then it is compared to the next food then it is set to the date of the next food and so on
-      // if the date is not equal to the currentDay then we push a new object into the groupedFoods array
-      // the new object has a date property that is set to the currentDay
-      if (date !== currentDay) {
-        currentDay = date;
-        groupedFoods.push({
-          date: currentDay,
-          foods: [],
-          totalCalories: 0,
-        });
-      }
+        groupedFoods[groupedFoods.length - 1].foods.push(food);
+        groupedFoods[groupedFoods.length - 1].totalCalories += food.calories;
+      });
 
-      // we push the food into the foods array of the last object in the groupedFoods array
-      groupedFoods[groupedFoods.length - 1].foods.push(food);
-      // we add the calories of the food to the totalCalories property of the last object in the groupedFoods array
-      groupedFoods[groupedFoods.length - 1].totalCalories += food.calories;
-    });
-
-    res.send(groupedFoods);
+      res.send(groupedFoods);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("Server error");
+    }
   } else {
-    res.send("not authenticated");
+    res.status(401).send("not authenticated");
   }
 });
 
