@@ -6,8 +6,11 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { DB_URL } = require("./db");
-// Build the App
+const { DB_URL, SESSION_SECRET } = require("./db");
+
+const session = require("express-session");
+const MongoDBStore = require("connect-mongo");
+
 const app = express();
 
 // Middleware
@@ -121,6 +124,7 @@ app.delete("/foods/:id", async (req, res) => {
 // GET /profile
 app.get("/profile", async (req, res) => {
   try {
+    console.log(req.user);
     // find current logged in user by searching database
     let currentUser = await Users.findById(req.user._id);
     res.send(currentUser);
