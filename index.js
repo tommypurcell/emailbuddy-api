@@ -7,7 +7,6 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { DB_URL, SESSION_SECRET } = require("./db");
-
 const session = require("express-session");
 const MongoDBStore = require("connect-mongo");
 
@@ -120,13 +119,15 @@ app.delete("/foods/:id", async (req, res) => {
   res.send("deleted");
 });
 
-// get current logged in user by searching database
 // GET /profile
 app.get("/profile", async (req, res) => {
   try {
-    console.log(req.user);
-    // find current logged in user by searching database
-    let currentUser = await Users.findById(req.user._id);
+    if (!req.user) {
+      return res.status(401).send("User not logged in");
+    }
+    console.log("req.user", req.user);
+    // find current logged in user by searching the database
+    let currentUser = await Users.findOne(req.user);
     res.send(currentUser);
   } catch (err) {
     console.log(err);
