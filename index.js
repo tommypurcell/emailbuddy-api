@@ -16,8 +16,8 @@ const app = express();
 app.use(logger("tiny"));
 app.use(
   cors({
-    credentials: true,
     origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 
@@ -122,16 +122,20 @@ app.delete("/foods/:id", async (req, res) => {
 // GET /profile
 app.get("/profile", async (req, res) => {
   try {
-    if (!req.user) {
+    if (!req.isAuthenticated()) {
       return res.status(401).send("User not logged in");
     }
-    console.log("req.user", req.user);
-    // find current logged in user by searching the database
-    let currentUser = await Users.findOne(req.user);
+
+    // Find the current logged-in user by searching the database using the user's ID
+    let currentUser = await Users.findById(req.user._id);
+
+    if (!currentUser) {
+      return res.status(404).send("User not found");
+    }
+
     res.send(currentUser);
   } catch (err) {
     console.log(err);
-    console.log("Not authorized");
     res.status(500).send("Server error");
   }
 });
