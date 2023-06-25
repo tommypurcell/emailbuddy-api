@@ -9,8 +9,10 @@ const cors = require("cors");
 const { DB_URL, SESSION_SECRET } = require("./db");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongo");
+require("dotenv").config();
 
 const app = express();
+app.set("trust proxy", 1);
 
 // Middleware
 app.use(logger("tiny"));

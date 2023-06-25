@@ -1,5 +1,6 @@
+require("dotenv").config();
+
 module.exports = {
-  DB_URL:
-    "mongodb+srv://tommypurcelljr:caloriepassword@calorie-counter.h9z6mfc.mongodb.net/calorie-counter",
-  SESSION_SECRET: "caloriepassword",
+  DB_URL: process.env.DB_URL,
+  SESSION_SECRET: process.env.DB_PASSWORD,
 };
