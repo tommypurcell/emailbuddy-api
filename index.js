@@ -18,7 +18,10 @@ app.set("trust proxy", 1);
 app.use(logger("tiny"));
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://calorie-counter-mcz6.onrender.com/",
+    ],
     credentials: true,
   })
 );
