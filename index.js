@@ -20,8 +20,9 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://calorie-counter-mcz6.onrender.com/",
+      "https://calorie-counter-mcz6.onrender.com",
     ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   })
 );
