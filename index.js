@@ -43,7 +43,6 @@ mongoose.connect(
 );
 
 // Models
-
 const Foods = require("./models/foods");
 const Users = require("./models/users");
 
