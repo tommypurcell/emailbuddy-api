@@ -9,6 +9,7 @@ const cors = require("cors");
 const { DB_URL, SESSION_SECRET } = require("./db");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongo");
+const Campaigns = require("./models/campaigns");
 require("dotenv").config();
 
 const app = express();
@@ -45,6 +46,7 @@ mongoose.connect(
 // Models
 const Foods = require("./models/foods");
 const Users = require("./models/users");
+const { title } = require("process");
 
 // Security
 require("./express-sessions")(app);
@@ -52,10 +54,8 @@ require("./express-sessions")(app);
 // Routes
 // ::::
 app.get("/", async (req, res) => {
-  console.log(req.query);
-  let products = await Users.find({});
-  console.log(products);
-  res.send("Hello from the Calorie Counter API");
+  console.log("working...");
+  res.send("Hello from the Emailer API");
 });
 
 // get /foods with user auth
@@ -93,6 +93,26 @@ app.get("/foods", async (req, res) => {
     res.send(groupedFoods);
   } else {
     res.send("not authenticated");
+  }
+});
+
+// this will create an email campaign with data from the form and the csv file
+app.post("/campaigns", async (req, res) => {
+  try {
+    // Check if a campaign with the same title already exists
+    const existingCampaign = await Campaigns.findOne({ title: req.body.title });
+
+    if (existingCampaign) {
+      console.log("campaign title already exists");
+      return res.status(400).send("campaign title already exists"); // Return to exit the function early
+    }
+
+    // If not, create a new campaign
+    let campaign = await Campaigns.create(req.body);
+    res.send(campaign);
+  } catch (error) {
+    console.error("Error creating campaign:", error);
+    res.status(400).send(error.message);
   }
 });
 

@@ -1,21 +1,16 @@
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-module.exports = mongoose.model("foods", {
+module.exports = mongoose.model("campaigns", {
   title: {
     type: String,
-    required: true,
   },
-  subjects: {
-    type: ObjectId,
-    required: true,
-  },
-  messages: {
-    type: ObjectId,
-    required: true,
-  },
-  recipients: {
-    type: ObjectId,
-    required: true,
-  },
+  subjects: [{ type: String }],
+  messages: [{ type: String }],
+  recipients: [
+    {
+      name: { type: String },
+      email: { type: String },
+    },
+  ],
 });
